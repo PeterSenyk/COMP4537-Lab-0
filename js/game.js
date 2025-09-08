@@ -31,15 +31,12 @@ class Game {
     createButtons() {
         const gameArea = document.getElementById('game-area');
         gameArea.innerHTML = '';
-        
         this.board.calculateGrid();
         
         const shuffledColors = [...this.colors].sort(() => Math.random() - 0.5);
         
         for (let i = 0; i < this.buttonCount; i++) {
             const button = new Button(i + 1, shuffledColors[i]);
-            button.createElement();
-            
             button.element.style.position = 'absolute';
             button.element.style.left = (i * 240 + 50) + 'px'; 
             button.element.style.top = '100px';
@@ -51,21 +48,18 @@ class Game {
 
     showNumbersFirst() {
         this.buttons.forEach(btn => btn.showNumber());
-
-        const waitTime = this.buttonCount * 1000; 
         
         setTimeout(() => {
             this.buttons.forEach(btn => btn.hideNumber());
             this.startScramblingAnimation();
-        }, waitTime);
+        }, this.buttonCount * 1000);
     }
 
     startScramblingAnimation() {
         let scrambleCount = 0;
-        const totalScrambles = this.buttonCount;
         
         const scramble = () => {
-            if (scrambleCount >= totalScrambles) {
+            if (scrambleCount >= this.buttonCount) {
                 this.startMemoryTest();
                 return;
             }
@@ -73,7 +67,6 @@ class Game {
             this.board.calculateGrid();
             this.arrangeButtons();
             scrambleCount++;
-            
             setTimeout(scramble, 2000);
         };
         
@@ -81,9 +74,8 @@ class Game {
     }
 
     arrangeButtons() {
-        this.buttons.forEach((btn) => {
+        this.buttons.forEach(btn => {
             const position = this.board.getRandomPosition();
-            btn.element.style.position = 'absolute';
             btn.element.style.left = position.x + 'px';
             btn.element.style.top = position.y + 'px';
         });
@@ -106,13 +98,11 @@ class Game {
             this.currentStep++;
             
             if (this.currentStep === this.buttonCount) {
-                const message = window.MESSAGES ? window.MESSAGES.EXCELLENT_MEMORY : 'Excellent memory!';
-                alert(message);
+                alert(window.MESSAGES?.EXCELLENT_MEMORY || 'Excellent memory!');
                 this.reset();
             }
         } else {
-            const message = window.MESSAGES ? window.MESSAGES.WRONG_ORDER : 'Wrong order!';
-            alert(message);
+            alert(window.MESSAGES?.WRONG_ORDER || 'Wrong order!');
             this.buttons.forEach(btn => btn.showNumber());
             this.reset();
         }
